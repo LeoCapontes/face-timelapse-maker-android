@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Face Timelapse Maker</string>
+    <string name="title_activity_landing">LandingActivity</string>
+
+    <!-- Landing page strings -->
+    <string name="landing_header">Welcome</string>
+    <string name="landing_import_button">Import Photo Library</string>
+    <string name="landing_import_instructions">Select a folder containing the images you would like to create a timelapse from</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <!-- Main page string -->
+    <string name="create_timelapse_button">Create Timelapse</string>
+
+</resources>
