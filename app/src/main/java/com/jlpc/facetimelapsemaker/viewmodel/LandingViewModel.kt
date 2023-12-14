@@ -7,13 +7,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jlpc.facetimelapsemaker.FaceTimelapseMakerApp
 import com.jlpc.facetimelapsemaker.model.MetaDataGetter
 import com.jlpc.facetimelapsemaker.model.PhotoEntity
+import com.jlpc.facetimelapsemaker.model.PhotoRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Date
 
-class LandingViewModel(private val metaDataGetter: MetaDataGetter) : ViewModel() {
+class LandingViewModel(
+    private val metaDataGetter: MetaDataGetter,
+    private val repository: PhotoRepository = FaceTimelapseMakerApp.repository) : ViewModel() {
 
     private val TAG: String = "LandingViewModel"
     private val DEFAULTDATE: Long = 1702315783
@@ -45,9 +49,12 @@ class LandingViewModel(private val metaDataGetter: MetaDataGetter) : ViewModel()
 
     fun updateDB(uris: List<Uri>?){
         val uriDates = getUriDates(uris)
-        uris?.zip(uriDates)?.forEach { (uri, date) ->
-            val photoEntity: PhotoEntity = PhotoEntity(uri = uri.toString(), date = Date(date))
-
+        viewModelScope.launch(Dispatchers.IO) {
+            uris?.zip(uriDates)?.forEach { (uri, date) ->
+                val photoEntity: PhotoEntity = PhotoEntity(uri = uri.toString(), date = Date(date))
+                repository.addPhoto(photoEntity)
+            }
+            repository.dbFirst()
         }
     }
 }
