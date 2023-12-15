@@ -27,7 +27,12 @@ fun LandingScreen(navController: NavController) {
         onResult = {
             Log.d(TAG, "Selected URI: $it")
             viewModel.updateDB(it)
-            navController.navigate(Screen.HomeScreen.route)
+            navController.navigate(Screen.HomeScreen.route) {
+                // prevent user from swiping back to landing screen
+                popUpTo(Screen.LandingScreen.route){
+                    inclusive = true
+                }
+            }
         },
     )
 

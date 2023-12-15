@@ -1,11 +1,11 @@
 package com.jlpc.facetimelapsemaker
 
-import com.jlpc.facetimelapsemaker.model.PhotoDatabase
 import android.app.Application
 import androidx.room.Room
+import com.jlpc.facetimelapsemaker.model.PhotoDatabase
 import com.jlpc.facetimelapsemaker.model.PhotoRepository
 
-class FaceTimelapseMakerApp: Application() {
+class FaceTimelapseMakerApp : Application() {
 
     companion object {
         lateinit var database: PhotoDatabase
@@ -18,7 +18,7 @@ class FaceTimelapseMakerApp: Application() {
         super.onCreate()
         database = Room.inMemoryDatabaseBuilder(
             applicationContext,
-            PhotoDatabase::class.java
+            PhotoDatabase::class.java,
         ).build()
         repository = PhotoRepository(database)
     }

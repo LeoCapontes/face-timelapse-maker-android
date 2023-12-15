@@ -1,3 +1,6 @@
+package com.jlpc.facetimelapsemaker.components
+
+import LandingScreen
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -11,11 +14,13 @@ fun Navigation() {
     NavHost(navController = navController, startDestination = Screen.LandingScreen.route) {
         composable(route = Screen.HomeScreen.route) {
             HomeScreen(
-                onCreateButtonClick = {}, onSettingsButtonClick = {}, navController = navController)
+                onCreateButtonClick = {},
+                onSettingsButtonClick = {},
+                navController = navController,
+            )
         }
-        composable(route = Screen.LandingScreen.route){
+        composable(route = Screen.LandingScreen.route) {
             LandingScreen(navController = navController)
         }
     }
 }
-
