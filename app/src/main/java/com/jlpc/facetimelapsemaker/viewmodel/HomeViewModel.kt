@@ -28,7 +28,9 @@ class HomeViewModel(
         viewModelScope.launch {
             currentPhotoList.value = repository.getAllPhotoEntities()
             Log.d(TAG, "load entities called")
-            Log.d(TAG, "current value is $currentPhotoList.value[1]")
+            var temp = currentPhotoList.value
+            var repodata = repository.getAllPhotoEntities()
+            Log.d(TAG, "current value is $temp")
         }
     }
 }

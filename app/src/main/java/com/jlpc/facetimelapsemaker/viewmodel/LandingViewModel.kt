@@ -13,11 +13,13 @@ import com.jlpc.facetimelapsemaker.model.PhotoEntity
 import com.jlpc.facetimelapsemaker.model.PhotoRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Date
 
 class LandingViewModel(
     private val metaDataGetter: MetaDataGetter,
-    private val repository: PhotoRepository = FaceTimelapseMakerApp.repository) : ViewModel() {
+    private val repository: PhotoRepository = FaceTimelapseMakerApp.repository,
+) : ViewModel() {
 
     private val TAG: String = "LandingViewModel"
     private val DEFAULTDATE: Long = 1702315783
@@ -31,10 +33,10 @@ class LandingViewModel(
         _startPhotoPickerEvent.value = Unit
     }
 
-    fun getUriDates(uris: List<Uri>?): List<Long>{
+    suspend fun getUriDates(uris: List<Uri>?): List<Long> {
         val dateList: MutableList<Long> = mutableListOf()
-        viewModelScope.launch(Dispatchers.IO) {
-            uris?.forEach {uri ->
+        withContext(Dispatchers.IO) {
+            uris?.forEach { uri ->
                 val date = metaDataGetter.getPhotoDate(uri)
                 if (date != null) {
                     dateList.add(date)
@@ -47,9 +49,9 @@ class LandingViewModel(
         return dateList
     }
 
-    fun updateDB(uris: List<Uri>?){
-        val uriDates = getUriDates(uris)
+    fun updateDB(uris: List<Uri>?) {
         viewModelScope.launch(Dispatchers.IO) {
+            val uriDates = getUriDates(uris)
             uris?.zip(uriDates)?.forEach { (uri, date) ->
                 val photoEntity: PhotoEntity = PhotoEntity(uri = uri.toString(), date = Date(date))
                 repository.addPhoto(photoEntity)

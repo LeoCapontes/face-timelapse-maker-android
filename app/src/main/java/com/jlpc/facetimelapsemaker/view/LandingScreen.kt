@@ -18,8 +18,7 @@ import com.jlpc.facetimelapsemaker.viewmodel.LandingViewModel
 private val TAG: String = "LandingScreen"
 
 @Composable
-fun LandingScreen(navController: NavController){
-
+fun LandingScreen(navController: NavController) {
     val metaDataGetter: MetaDataGetter = MetaDataGetter(context = LocalContext.current)
     val viewModel: LandingViewModel = LandingViewModel(metaDataGetter)
 
@@ -27,16 +26,17 @@ fun LandingScreen(navController: NavController){
         contract = ActivityResultContracts.PickMultipleVisualMedia(),
         onResult = {
             Log.d(TAG, "Selected URI: $it")
-            viewModel.getUriDates(it)
+            viewModel.updateDB(it)
             navController.navigate(Screen.HomeScreen.route)
-        })
+        },
+    )
 
     val startPhotoPickerEvent by viewModel.startPhotoPickerEvent.observeAsState()
 
     LaunchedEffect(startPhotoPickerEvent) {
         startPhotoPickerEvent?.let {
             photoPickerLauncher.launch(
-                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
             )
         }
     }
