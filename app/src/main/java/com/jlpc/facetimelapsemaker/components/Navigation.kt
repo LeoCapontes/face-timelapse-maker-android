@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.jlpc.facetimelapsemaker.view.HomeScreen
 import com.jlpc.facetimelapsemaker.view.Screen
+import com.jlpc.facetimelapsemaker.view.VideoConfigScreen
 
 @Composable
 fun Navigation() {
@@ -21,6 +22,9 @@ fun Navigation() {
         }
         composable(route = Screen.LandingScreen.route) {
             LandingScreen(navController = navController)
+        }
+        composable(route = Screen.VideoConfigScreen.route) {
+            VideoConfigScreen(navController = navController)
         }
     }
 }
