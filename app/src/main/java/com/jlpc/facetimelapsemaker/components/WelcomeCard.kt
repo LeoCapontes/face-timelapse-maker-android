@@ -20,23 +20,22 @@ fun WelcomeCard(onButtonClick: () -> Unit) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
-
-        ){
-        Column(modifier = Modifier.padding(16.dp)){
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = stringResource(R.string.landing_header),
-                style = MaterialTheme.typography.headlineLarge
+                style = MaterialTheme.typography.headlineLarge,
             )
             Text(
                 text = stringResource(R.string.landing_import_instructions),
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
             )
             Button(
                 onClick = onButtonClick,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-                    .fillMaxWidth()
-            ){
+                    .fillMaxWidth(),
+            ) {
                 Text(text = stringResource(R.string.landing_import_button))
             }
         }

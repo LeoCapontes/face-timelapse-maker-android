@@ -15,7 +15,7 @@ fun Navigation() {
     NavHost(navController = navController, startDestination = Screen.LandingScreen.route) {
         composable(route = Screen.HomeScreen.route) {
             HomeScreen(
-                onCreateButtonClick = {},
+                onCreateButtonClick = { navController.navigate(Screen.VideoConfigScreen.route)},
                 onSettingsButtonClick = {},
                 navController = navController,
             )

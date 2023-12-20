@@ -29,7 +29,7 @@ fun LandingScreen(navController: NavController) {
             viewModel.updateDB(it)
             navController.navigate(Screen.HomeScreen.route) {
                 // prevent user from swiping back to landing screen
-                popUpTo(Screen.LandingScreen.route){
+                popUpTo(Screen.LandingScreen.route) {
                     inclusive = true
                 }
             }
