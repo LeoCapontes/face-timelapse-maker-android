@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.room.Room
 import com.jlpc.facetimelapsemaker.model.PhotoDatabase
 import com.jlpc.facetimelapsemaker.model.PhotoRepository
+import com.jlpc.facetimelapsemaker.model.PreferenceManager
 
 class FaceTimelapseMakerApp : Application() {
 
@@ -11,6 +12,8 @@ class FaceTimelapseMakerApp : Application() {
         lateinit var database: PhotoDatabase
             private set
         lateinit var repository: PhotoRepository
+            private set
+        lateinit var preferences: PreferenceManager
             private set
     }
 
@@ -21,5 +24,6 @@ class FaceTimelapseMakerApp : Application() {
             PhotoDatabase::class.java,
         ).build()
         repository = PhotoRepository(database)
+        preferences = PreferenceManager(context = applicationContext)
     }
 }

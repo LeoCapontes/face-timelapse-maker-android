@@ -9,15 +9,18 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
+import com.jlpc.facetimelapsemaker.viewmodel.VideoConfigViewModel
 
-@Preview
 @Composable
-fun FramerateSliderCard(maxFramerate: Float = 24f) {
+fun FramerateSliderCard(maxFramerate: Float = 24f, viewModel: VideoConfigViewModel) {
     var sliderPosition by remember { mutableFloatStateOf(1f) }
     Column {
         Slider(
             value = sliderPosition,
-            onValueChange = { sliderPosition = it },
+            onValueChange = {
+                sliderPosition = it
+                viewModel.saveSelectedFPS(it.toInt())
+                },
             steps = maxFramerate.toInt() - 1,
             valueRange = 1f..maxFramerate,
         )
