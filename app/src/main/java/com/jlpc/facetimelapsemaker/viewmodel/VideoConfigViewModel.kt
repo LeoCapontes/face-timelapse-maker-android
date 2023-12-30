@@ -30,7 +30,8 @@ class VideoConfigViewModel() : ViewModel() {
     fun saveSelectedQuality(newQuality: String) {
         viewModelScope.launch {
             preferenceManager.saveQuality(newQuality)
-            Log.d(TAG, "saved quality ${qualityPreference}")
+            Log.d(TAG, "saved quality $qualityPreference")
         }
     }
+
 }
