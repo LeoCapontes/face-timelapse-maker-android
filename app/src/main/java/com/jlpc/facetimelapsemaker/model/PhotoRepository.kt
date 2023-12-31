@@ -1,5 +1,6 @@
 package com.jlpc.facetimelapsemaker.model
 
+import android.net.Uri
 import android.util.Log
 
 class PhotoRepository(private val database: PhotoDatabase) {
@@ -11,6 +12,10 @@ class PhotoRepository(private val database: PhotoDatabase) {
 
     suspend fun getAllPhotoEntities(): List<PhotoEntity> {
         return database.photoDao().getAllPhotos()
+    }
+
+    suspend fun getAllURIs(): List<Uri> {
+        return database.photoDao().getAllPhotos().map { Uri.parse(it.uri) }
     }
 
     suspend fun dbFirst() {

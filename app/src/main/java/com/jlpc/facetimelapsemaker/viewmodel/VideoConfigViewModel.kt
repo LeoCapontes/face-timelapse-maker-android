@@ -33,5 +33,4 @@ class VideoConfigViewModel() : ViewModel() {
             Log.d(TAG, "saved quality $qualityPreference")
         }
     }
-
 }

@@ -17,8 +17,6 @@ import com.jlpc.facetimelapsemaker.components.FramerateSliderCard
 import com.jlpc.facetimelapsemaker.components.VideoParameter
 import com.jlpc.facetimelapsemaker.viewmodel.VideoConfigViewModel
 
-
-
 @Composable
 fun VideoConfigScreen(
     navController: NavController,
@@ -30,7 +28,10 @@ fun VideoConfigScreen(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
             DropDown(qualityOptions, viewModel, VideoParameter.QUALITY)
             DropDown(formatOptions, viewModel, VideoParameter.FORMAT)
             FramerateSliderCard(viewModel = viewModel)

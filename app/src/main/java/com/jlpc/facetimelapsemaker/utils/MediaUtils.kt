@@ -1,9 +1,14 @@
 package com.jlpc.facetimelapsemaker.utils
 
+import android.content.Context
+import android.net.Uri
 import android.util.Log
 import com.arthenica.ffmpegkit.FFmpegKit
 import com.arthenica.ffmpegkit.FFmpegSession
 import com.arthenica.ffmpegkit.ReturnCode
+import java.io.File
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 
 suspend fun createTimelapse(fps: Int, path: String, encoder: Encoder, quality: String) {
     val destFileName = "timelapse.$"
@@ -51,4 +56,30 @@ private fun fileExtensionFromEncoder(encoder: Encoder): String {
         return "mp4"
     }
     return "webm"
+}
+
+// to ensure best compatibility with ffmpeg, copy and save the files into cache
+// naming each file a 4 digit number in order, i.e. 0001, 0002 etc.
+// this should be deleted after timelapse generation to save space
+// ASSUMES .jpg PHOTOS
+fun saveAsFFMpegCompatible(uriList: List<Uri>, context: Context) {
+    Log.d(TAG, "save cache called")
+    var fileNo: Int = 1
+    uriList.forEach { uri ->
+        // Open image source as stream
+        context.contentResolver.openInputStream(uri)?.use { inputStream ->
+            // Format the file name with leading zeros
+            val fileName = String.format("%04d.jpg", fileNo)
+            val file = File(context.cacheDir, fileName)
+
+            // Create a new file
+            file.createNewFile()
+
+            // Copy from source to destination
+            Files.copy(inputStream, file.toPath(), StandardCopyOption.REPLACE_EXISTING)
+            fileNo++
+        }
+    }
+    // print cache to confirm files have been created
+    context.cacheDir.walkTopDown().forEach { Log.d(TAG, it.name) }
 }
