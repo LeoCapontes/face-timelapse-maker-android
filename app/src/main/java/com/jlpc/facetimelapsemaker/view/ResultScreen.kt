@@ -13,7 +13,7 @@ import com.jlpc.facetimelapsemaker.viewmodel.ResultViewModel
 fun ResultScreen(navController: NavController) {
     val viewModel = ResultViewModel(appContext = LocalContext.current.applicationContext)
     LaunchedEffect(Unit) {
-        viewModel.createTimelapse()
+        viewModel.launchTimelapseCommand()
     }
 
     Box(
