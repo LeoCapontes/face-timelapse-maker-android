@@ -7,12 +7,16 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.jlpc.facetimelapsemaker.FaceTimelapseMakerApp
 import com.jlpc.facetimelapsemaker.model.PreferenceManager
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectIndexed
 import kotlinx.coroutines.launch
 
 class VideoConfigViewModel() : ViewModel() {
     val TAG: String = "VideoConfigViewModel"
     val preferenceManager: PreferenceManager = FaceTimelapseMakerApp.preferences
     val qualityPreference: LiveData<String?> = preferenceManager.qualityFlow.asLiveData()
+    val fpsPreference: LiveData<Int?> = preferenceManager.fpsFlow.asLiveData()
+
     fun saveSelectedFormat(newFormat: String) {
         viewModelScope.launch {
             preferenceManager.saveFormat(newFormat)
@@ -22,8 +26,11 @@ class VideoConfigViewModel() : ViewModel() {
 
     fun saveSelectedFPS(newFPS: Int) {
         viewModelScope.launch {
+            Log.d(TAG, "Attempting to save $newFPS")
             preferenceManager.saveFPS(newFPS)
-            Log.d(TAG, "saved fps $newFPS")
+            preferenceManager.fpsFlow.collect { value ->
+                Log.d(TAG, "fps flow saved value: $value")
+            }
         }
     }
 

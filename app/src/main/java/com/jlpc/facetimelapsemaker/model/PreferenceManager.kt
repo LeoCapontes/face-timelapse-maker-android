@@ -1,6 +1,7 @@
 package com.jlpc.facetimelapsemaker.model
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
 import androidx.datastore.preferences.core.Preferences
@@ -25,6 +26,7 @@ class PreferenceManager(context: Context) {
     }
 
     private val dataStore = context.dataStore
+    private val TAG = "PreferenceManager"
 
     suspend fun saveFormat(format: String) {
         dataStore.edit { preferences ->
@@ -71,6 +73,7 @@ class PreferenceManager(context: Context) {
     val fpsFlow: Flow<Int?> = dataStore.data.catch {
             exception ->
         if (exception is IOException) {
+            Log.e(TAG, "Error reading preferences: $exception")
             emit(emptyPreferences())
         } else {
             throw exception
