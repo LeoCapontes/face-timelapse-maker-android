@@ -13,8 +13,8 @@ import java.nio.file.StandardCopyOption
 suspend fun createTimelapse(fps: Int, path: String, encoder: Encoder, quality: String) {
     val destFileName = "timelapse.${fileExtensionFromEncoder(encoder)}"
     val timelapseCommand = (
-        "-y -r $fps -s $quality -i $path/%04d.jpg -c:v ${enumString(encoder)}" +
-            " -crf 20 $path/$destFileName"
+        "-y -r $fps -i $path/%04d.jpg -vf scale=$quality -c:v ${enumString(encoder)}" +
+            " -crf 5 $path/$destFileName"
         )
 
     val session: FFmpegSession = FFmpegKit.execute(timelapseCommand)
