@@ -26,7 +26,7 @@ class ResultViewModel(
     val preferenceManager: PreferenceManager = FaceTimelapseMakerApp.preferences
     val fpsLiveData: LiveData<Int?> = preferenceManager.fpsFlow.asLiveData()
     val uriLiveData: MutableLiveData<Uri> by lazy {
-        MutableLiveData<Uri>(Uri.parse("${appContext.cacheDir}/test.mp4"))
+        MutableLiveData<Uri>()
     }
     val timelapseGenerated: MutableLiveData<Boolean> by lazy { MutableLiveData<Boolean>(false) }
 
@@ -40,6 +40,7 @@ class ResultViewModel(
                     // TODO change placeholder
                     if (fps != 0) {
                         createTimelapse(fps, appContext.cacheDir.path, Encoder.MP4, "1920x1080")
+                        uriLiveData.value = Uri.parse("${appContext.cacheDir}/timelapse.mp4")
                         Log.d(TAG, "timelapse complete")
                         timelapseGenerated.value = true
                     } else {
