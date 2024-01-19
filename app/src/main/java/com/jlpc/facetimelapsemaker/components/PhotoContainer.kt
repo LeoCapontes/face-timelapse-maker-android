@@ -3,6 +3,7 @@ package com.jlpc.facetimelapsemaker.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -31,7 +32,8 @@ fun PhotoContainer(uiModel: PhotoEntity) {
     Box(
         modifier = Modifier
             .padding(2.dp)
-            .size(64.dp, 64.dp)
+            .fillMaxWidth()
+            .aspectRatio(1f)
             .clip(shape = MaterialTheme.shapes.small),
     ) {
         AsyncImage(

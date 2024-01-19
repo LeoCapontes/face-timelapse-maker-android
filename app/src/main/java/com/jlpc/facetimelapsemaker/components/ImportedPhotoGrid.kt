@@ -12,7 +12,7 @@ import com.jlpc.facetimelapsemaker.model.PhotoUiModel
 @Composable
 fun ImportedPhotoGrid(uiModelList: List<PhotoEntity>) {
     LazyVerticalGrid(
-        columns = GridCells.Adaptive(86.dp),
+        columns = GridCells.Adaptive(124.dp),
         content = {
             items(uiModelList.size) {
                     index ->
@@ -28,7 +28,7 @@ fun PreviewImportedPhotoGrid() {
     val testPhotoList: List<PhotoUiModel> = mockUIModelList
 
     LazyVerticalGrid(
-        columns = GridCells.Adaptive(86.dp),
+        columns = GridCells.Adaptive(120.dp),
         content = {
             items(testPhotoList.size) {
                     index ->
