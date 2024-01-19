@@ -81,3 +81,17 @@ fun saveImagesToCache(uriList: List<Uri>, context: Context) {
     // print cache to confirm files have been created
     context.cacheDir.walkTopDown().forEach { Log.d(TAG, it.name) }
 }
+
+fun deleteCachedImages(context: Context) {
+    Log.d(TAG, "delete cached images called")
+    val cachedImageRegex = Regex("(\\d{4})\\.jpg")
+    context.cacheDir.walkTopDown().forEach {
+        if (cachedImageRegex.matches(it.name)) {
+            Log.d(TAG, "deleting ${it.name}")
+            it.delete()
+        } else {
+            Log.d(TAG, "not deleting ${it.name}")
+        }
+    }
+    Log.d(TAG, "Cache deleting complete")
+}
