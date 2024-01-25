@@ -1,4 +1,5 @@
 
+import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.jlpc.facetimelapsemaker.FaceTimelapseMakerApp
@@ -33,6 +35,7 @@ import com.jlpc.facetimelapsemaker.viewmodel.ResultViewModelFactory
 @Composable
 fun ResultScreen(navController: NavController) {
     val TAG = "ResultScreen"
+    val context = LocalContext.current
     val viewModel: ResultViewModel = viewModel(
         factory = ResultViewModelFactory(
             FaceTimelapseMakerApp.repository,
@@ -74,7 +77,15 @@ fun ResultScreen(navController: NavController) {
                 }
                 VideoActionPanel(
                     onSaveButtonClick = { /*TODO*/ },
-                    onShareButtonClick = { /*TODO*/ },
+                    onShareButtonClick = {
+                        val intent = Intent(Intent.ACTION_SEND).apply {
+                            type = "video/*"
+                            putExtra(Intent.EXTRA_STREAM, viewModel.uriLiveData.value)
+                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        }
+                        val shareIntent = Intent.createChooser(intent, "Share your video")
+                        context.startActivity(shareIntent)
+                    },
                     onNewVideoButtonClick = {},
                 )
             }
