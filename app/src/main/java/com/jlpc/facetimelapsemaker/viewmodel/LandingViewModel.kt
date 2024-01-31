@@ -20,17 +20,19 @@ class LandingViewModel(
     private val metaDataGetter: MetaDataGetter,
     private val repository: PhotoRepository = FaceTimelapseMakerApp.repository,
 ) : ViewModel() {
-
     private val TAG: String = "LandingViewModel"
     private val DEFAULTDATE: Long = 1702315783
 
     // LiveData for event handling
-    private val _startPhotoPickerEvent = MutableLiveData<Unit>()
-    val startPhotoPickerEvent: LiveData<Unit> = _startPhotoPickerEvent
+    private val _startPhotoPickerEvent = MutableLiveData<Int>()
+    val startPhotoPickerEvent: LiveData<Int> = _startPhotoPickerEvent
+    private var eventTrigger = 1
 
     fun onImportButtonClick() {
         Log.d(TAG, "import button clicked")
-        _startPhotoPickerEvent.value = Unit
+        // simple way to create an observable change in state so that button click is always handled
+        _startPhotoPickerEvent.value = eventTrigger
+        eventTrigger *= -1
     }
 
     suspend fun getUriDates(uris: List<Uri>?): List<Long> {

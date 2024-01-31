@@ -1,4 +1,5 @@
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,22 +20,32 @@ private val TAG: String = "LandingScreen"
 
 @Composable
 fun LandingScreen(navController: NavController) {
-    val metaDataGetter: MetaDataGetter = MetaDataGetter(context = LocalContext.current)
+    val context = LocalContext.current
+    val metaDataGetter: MetaDataGetter = MetaDataGetter(context = context)
     val viewModel: LandingViewModel = LandingViewModel(metaDataGetter)
 
-    val photoPickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickMultipleVisualMedia(),
-        onResult = {
-            Log.d(TAG, "Selected URI: $it")
-            viewModel.updateDB(it)
-            navController.navigate(Screen.HomeScreen.route) {
-                // prevent user from swiping back to landing screen
-                popUpTo(Screen.LandingScreen.route) {
-                    inclusive = true
+    val photoPickerLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.PickMultipleVisualMedia(),
+            onResult = {
+                if (it.isEmpty()) {
+                    Toast.makeText(
+                        context,
+                        "No images selected",
+                        Toast.LENGTH_SHORT,
+                    ).show()
+                } else {
+                    Log.d(TAG, "Selected URI: $it")
+                    viewModel.updateDB(it)
+                    navController.navigate(Screen.HomeScreen.route) {
+                        // prevent user from swiping back to landing screen
+                        popUpTo(Screen.LandingScreen.route) {
+                            inclusive = true
+                        }
+                    }
                 }
-            }
-        },
-    )
+            },
+        )
 
     val startPhotoPickerEvent by viewModel.startPhotoPickerEvent.observeAsState()
 

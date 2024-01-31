@@ -42,10 +42,11 @@ fun HomeScreen(
 
     Column {
         Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .padding(16.dp)
-                .clip(shape = MaterialTheme.shapes.large),
+            modifier =
+                Modifier
+                    .fillMaxHeight()
+                    .padding(16.dp)
+                    .clip(shape = MaterialTheme.shapes.large),
         ) {
             photoList?.let {
                 ImportedPhotoGrid(it)
@@ -55,10 +56,11 @@ fun HomeScreen(
                 Log.d(TAG, "no photolist")
             }
             MainButtonPanel(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomCenter)
-                    .background(color = Color.White.copy(alpha = 0.8f)),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.BottomCenter)
+                        .background(color = Color.White.copy(alpha = 0.8f)),
                 onCreateButtonClick = onCreateButtonClick,
                 onSettingsButtonClick = onSettingsButtonClick,
             )
@@ -81,7 +83,6 @@ fun MainButtonPanel(
             onClick = onCreateButtonClick,
             shape = FloatingActionButtonDefaults.extendedFabShape,
             modifier = buttonModifier,
-
         ) {
             Text(text = stringResource(R.string.create_timelapse_button))
         }
