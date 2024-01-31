@@ -1,12 +1,12 @@
 package com.jlpc.facetimelapsemaker.components
 
 import LandingScreen
-import ResultScreen
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.jlpc.facetimelapsemaker.view.HomeScreen
+import com.jlpc.facetimelapsemaker.view.ResultScreen
 import com.jlpc.facetimelapsemaker.view.Screen
 import com.jlpc.facetimelapsemaker.view.VideoConfigScreen
 
@@ -32,4 +32,3 @@ fun Navigation() {
         }
     }
 }
-

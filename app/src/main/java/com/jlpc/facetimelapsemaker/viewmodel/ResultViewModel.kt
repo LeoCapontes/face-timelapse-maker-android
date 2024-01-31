@@ -1,8 +1,16 @@
 package com.jlpc.facetimelapsemaker.viewmodel
 
+import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
+import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
+import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -17,19 +25,24 @@ import com.jlpc.facetimelapsemaker.utils.createTimelapse
 import com.jlpc.facetimelapsemaker.utils.deleteCachedImages
 import com.jlpc.facetimelapsemaker.utils.saveImagesToCache
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileInputStream
+import java.io.IOException
 
-// TODO add factory
 class ResultViewModel(
     private val repository: PhotoRepository = FaceTimelapseMakerApp.repository,
     private val appContext: Context,
 ) : ViewModel() {
     private val preferenceManager: PreferenceManager = FaceTimelapseMakerApp.preferences
     private val TAG: String = "ResultViewModel"
+    val saveVideoLauncher: ActivityResultLauncher<Intent>? = null
     val fpsLiveData: LiveData<Int?> = preferenceManager.fpsFlow.asLiveData()
     val uriLiveData: MutableLiveData<Uri> by lazy {
         MutableLiveData<Uri>()
     }
-    val timelapseGenerated: MutableLiveData<Boolean> by lazy { MutableLiveData<Boolean>(false) }
+    val timelapseGenerated: MutableLiveData<Boolean> by lazy {
+        MutableLiveData<Boolean>(false)
+    }
 
     fun launchTimelapseCommand() {
         viewModelScope.launch {
@@ -40,8 +53,16 @@ class ResultViewModel(
                     saveImagesToCache(uriList, appContext)
                     // TODO change placeholder
                     if (fps != 0) {
-                        createTimelapse(fps, appContext.cacheDir.path, Encoder.MP4, "1920x1080")
-                        uriLiveData.value = Uri.parse("${appContext.cacheDir}/timelapse.mp4")
+                        createTimelapse(
+                            fps,
+                            appContext.cacheDir.path,
+                            Encoder.MP4,
+                            "1920x1080",
+                        )
+                        uriLiveData.value =
+                            Uri.parse(
+                                "${appContext.cacheDir}/timelapse.mp4",
+                            )
                         Log.d(TAG, "timelapse complete")
                         timelapseGenerated.value = true
                         deleteCachedImages(appContext)
@@ -50,7 +71,37 @@ class ResultViewModel(
                     }
                 }
             }
-            // TODO clear cached images after timelapse generated
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    fun copyFileToDownloads(
+        context: Context,
+        sourceUri: Uri,
+        destFile: File,
+    ) {
+        val sourceFile = sourceUri.path?.let { File(it) }
+        Log.d(TAG, "starting copyFile function with uri: $sourceUri and destination: $destFile")
+        val values =
+            ContentValues().apply {
+                put(MediaStore.MediaColumns.DISPLAY_NAME, "timelapse.mp4")
+                put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4")
+                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
+            }
+
+        val resolver = context.contentResolver
+        val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
+        uri?.let { destinationUri ->
+            try {
+                resolver.openOutputStream(destinationUri).use { outputStream ->
+                    FileInputStream(sourceFile).use { inputStream ->
+                        inputStream.copyTo(outputStream!!)
+                    }
+                }
+                Toast.makeText(context, "File copied to Downloads", Toast.LENGTH_SHORT).show()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
         }
     }
 }

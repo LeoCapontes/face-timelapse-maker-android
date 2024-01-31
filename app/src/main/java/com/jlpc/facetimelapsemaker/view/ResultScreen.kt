@@ -1,6 +1,11 @@
-
+package com.jlpc.facetimelapsemaker.view
+import android.app.Activity
 import android.content.Intent
+import android.os.Build
+import android.os.Environment
 import android.util.Log
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,7 +28,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.jlpc.facetimelapsemaker.FaceTimelapseMakerApp
@@ -31,17 +35,22 @@ import com.jlpc.facetimelapsemaker.components.PreviewVideoPlayer
 import com.jlpc.facetimelapsemaker.components.VideoPlayer
 import com.jlpc.facetimelapsemaker.viewmodel.ResultViewModel
 import com.jlpc.facetimelapsemaker.viewmodel.ResultViewModelFactory
+import java.io.File
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun ResultScreen(navController: NavController) {
     val TAG = "ResultScreen"
     val context = LocalContext.current
-    val viewModel: ResultViewModel = viewModel(
-        factory = ResultViewModelFactory(
-            FaceTimelapseMakerApp.repository,
-            LocalContext.current.applicationContext,
-        ),
-    )
+    val activity = context as Activity
+    val viewModel: ResultViewModel =
+        viewModel(
+            factory =
+                ResultViewModelFactory(
+                    FaceTimelapseMakerApp.repository,
+                    LocalContext.current.applicationContext,
+                ),
+        )
     val timelapseFinished = viewModel.timelapseGenerated.observeAsState()
 
     LaunchedEffect(timelapseFinished.value) {
@@ -61,28 +70,49 @@ fun ResultScreen(navController: NavController) {
             Text("Generating Video...")
         } else {
             Log.d(TAG, "Drawing video player")
-            Column() {
+            Column {
                 Box(
                     contentAlignment = Alignment.Center,
                 ) {
                     viewModel.uriLiveData.value?.let {
                         VideoPlayer(
                             uri = it,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .fillMaxHeight(0.66f)
-                                .clip(shape = MaterialTheme.shapes.large),
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .fillMaxHeight(0.66f)
+                                    .clip(shape = MaterialTheme.shapes.large),
                         )
                     }
                 }
                 VideoActionPanel(
-                    onSaveButtonClick = { /*TODO*/ },
-                    onShareButtonClick = {
-                        val intent = Intent(Intent.ACTION_SEND).apply {
-                            type = "video/*"
-                            putExtra(Intent.EXTRA_STREAM, viewModel.uriLiveData.value)
-                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    onSaveButtonClick = {
+                        // for now defaulting to downloads directory
+                        Log.d(TAG, "getting downloads folder")
+                        val folder: File =
+                            Environment.getExternalStoragePublicDirectory(
+                                Environment.DIRECTORY_DOWNLOADS,
+                            )
+                        Log.d(TAG, "setting dest file")
+                        val destinationFile = File(folder, "timelapse.mp4")
+                        Log.d(TAG, "attempting copy")
+                        viewModel.uriLiveData.value?.let {
+                            viewModel.copyFileToDownloads(context, it, destinationFile)
                         }
+                        Log.d(TAG, "copy function completed")
+                        Toast.makeText(
+                            context,
+                            "Video saved to downloads",
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                    },
+                    onShareButtonClick = {
+                        val intent =
+                            Intent(Intent.ACTION_SEND).apply {
+                                type = "video/*"
+                                putExtra(Intent.EXTRA_STREAM, viewModel.uriLiveData.value)
+                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            }
                         val shareIntent = Intent.createChooser(intent, "Share your video")
                         context.startActivity(shareIntent)
                     },
@@ -99,9 +129,8 @@ fun PreviewResultScreen() {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
-
     ) {
-        Column() {
+        Column {
             Text("Video")
             Box(modifier = Modifier.height(300.dp).width(300.dp)) {
                 PreviewVideoPlayer()
@@ -119,7 +148,7 @@ fun VideoActionPanel(
     onNewVideoButtonClick: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 2.dp)) {
-        Row() {
+        Row {
             FilledTonalButton(
                 modifier = Modifier.fillMaxWidth(0.5f).padding(end = 2.dp),
                 onClick = onSaveButtonClick,
