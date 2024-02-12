@@ -10,12 +10,19 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 
-suspend fun createTimelapse(fps: Int, path: String, encoder: Encoder, quality: String) {
-    val destFileName = "timelapse.mp4"
+suspend fun createTimelapse(
+    fps: Int,
+    path: String,
+    encoder: Encoder,
+    quality: String,
+) {
+    val fileExtension = fileExtensionFromEncoder(encoder)
+    val encoderParam = encoderFFmpegString(encoder)
+    val destFileName = "timelapse.$fileExtension"
     val timelapseCommand = (
-        "-y -r $fps -i $path/%04d.jpg -vf scale=$quality -c:v mpeg4 -crf 5 " +
+        "-y -r $fps -i $path/%04d.jpg -vf scale=$quality -c:v $encoderParam -crf 5 " +
             "-pix_fmt yuv420p $path/$destFileName"
-        )
+    )
 
     val session: FFmpegSession = FFmpegKit.execute(timelapseCommand)
 
@@ -42,27 +49,37 @@ enum class Encoder {
     VP8,
 }
 
-private fun enumString(encoder: Encoder): String {
-    if (encoder == Encoder.MP4) {
-        return "mpeg4"
-    } else if (encoder == Encoder.VP8) {
-        return "libvpx"
+private fun encoderFFmpegString(encoder: Encoder): String {
+    return when (encoder) {
+        Encoder.MP4 -> "mpeg4"
+        Encoder.VP8 -> "libvpx"
+        else -> "mpeg4"
     }
-    return "mpeg4"
 }
 
-private fun fileExtensionFromEncoder(encoder: Encoder): String {
-    if (encoder == Encoder.MP4) {
-        return "mp4"
+fun fileExtensionFromEncoder(encoder: Encoder): String {
+    return when (encoder) {
+        Encoder.MP4 -> "mp4"
+        Encoder.VP8 -> "webm"
     }
-    return "webm"
+}
+
+fun stringToEncoderEnum(format: String): Encoder {
+    return when (format) {
+        "MP4" -> Encoder.MP4
+        "WEBM" -> Encoder.VP8
+        else -> Encoder.MP4
+    }
 }
 
 // to ensure best compatibility with ffmpeg, copy and save the files into cache
 // naming each file a 4 digit number in order, i.e. 0001, 0002 etc.
 // this should be deleted after timelapse generation to save space
 // ASSUMES .jpg PHOTOS
-fun saveImagesToCache(uriList: List<Uri>, context: Context) {
+fun saveImagesToCache(
+    uriList: List<Uri>,
+    context: Context,
+) {
     Log.d(TAG, "save cache called")
     var fileNo: Int = 1
     uriList.forEach { uri ->

@@ -23,7 +23,7 @@ fun VideoConfigScreen(
     viewModel: VideoConfigViewModel = viewModel(),
 ) {
     val qualityOptions: Array<String> = arrayOf("480p", "720p", "1080p")
-    val formatOptions: Array<String> = arrayOf("GIF", "MP4", "MOV")
+    val formatOptions: Array<String> = arrayOf("MP4", "WEBM")
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,

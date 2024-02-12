@@ -2,7 +2,6 @@ package com.jlpc.facetimelapsemaker.viewmodel
 
 import android.net.Uri
 import android.util.Log
-import androidx.activity.result.contract.ActivityResultContracts.*
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

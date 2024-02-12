@@ -20,10 +20,11 @@ import androidx.lifecycle.viewModelScope
 import com.jlpc.facetimelapsemaker.FaceTimelapseMakerApp
 import com.jlpc.facetimelapsemaker.model.PhotoRepository
 import com.jlpc.facetimelapsemaker.model.PreferenceManager
-import com.jlpc.facetimelapsemaker.utils.Encoder
 import com.jlpc.facetimelapsemaker.utils.createTimelapse
 import com.jlpc.facetimelapsemaker.utils.deleteCachedImages
+import com.jlpc.facetimelapsemaker.utils.fileExtensionFromEncoder
 import com.jlpc.facetimelapsemaker.utils.saveImagesToCache
+import com.jlpc.facetimelapsemaker.utils.stringToEncoderEnum
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileInputStream
@@ -47,27 +48,30 @@ class ResultViewModel(
     fun launchTimelapseCommand() {
         viewModelScope.launch {
             val uriList = repository.getAllURIs()
-
             preferenceManager.fpsFlow.collect { fps ->
-                if (fps != null) {
-                    saveImagesToCache(uriList, appContext)
-                    // TODO change placeholder
-                    if (fps != 0) {
-                        createTimelapse(
-                            fps,
-                            appContext.cacheDir.path,
-                            Encoder.MP4,
-                            "1920x1080",
-                        )
-                        uriLiveData.value =
-                            Uri.parse(
-                                "${appContext.cacheDir}/timelapse.mp4",
+                preferenceManager.formatFlow.collect { format ->
+                    val formatEnum = format?.let { stringToEncoderEnum(it) }
+                    val fileExtension = formatEnum?.let { fileExtensionFromEncoder(it) }
+                    if (fps != null && formatEnum != null) {
+                        saveImagesToCache(uriList, appContext)
+                        // TODO change placeholder quality
+                        if (fps != 0) {
+                            createTimelapse(
+                                fps,
+                                appContext.cacheDir.path,
+                                formatEnum,
+                                "1920x1080",
                             )
-                        Log.d(TAG, "timelapse complete")
-                        timelapseGenerated.value = true
-                        deleteCachedImages(appContext)
-                    } else {
-                        Log.d(TAG, "fps is null")
+                            uriLiveData.value =
+                                Uri.parse(
+                                    "${appContext.cacheDir}/timelapse.$fileExtension",
+                                )
+                            Log.d(TAG, "timelapse complete")
+                            timelapseGenerated.value = true
+                            deleteCachedImages(appContext)
+                        } else {
+                            Log.d(TAG, "fps is 0")
+                        }
                     }
                 }
             }
