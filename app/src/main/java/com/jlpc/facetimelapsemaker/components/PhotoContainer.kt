@@ -26,15 +26,18 @@ import coil.compose.AsyncImage
 import com.jlpc.facetimelapsemaker.R
 import com.jlpc.facetimelapsemaker.model.PhotoEntity
 import com.jlpc.facetimelapsemaker.model.PhotoUiModel
+import java.text.SimpleDateFormat
+import java.util.Date
 
 @Composable
 fun PhotoContainer(uiModel: PhotoEntity) {
     Box(
-        modifier = Modifier
-            .padding(2.dp)
-            .fillMaxWidth()
-            .aspectRatio(1f)
-            .clip(shape = MaterialTheme.shapes.small),
+        modifier =
+            Modifier
+                .padding(2.dp)
+                .fillMaxWidth()
+                .aspectRatio(1f)
+                .clip(shape = MaterialTheme.shapes.small),
     ) {
         AsyncImage(
             model = uiModel.uri,
@@ -43,39 +46,45 @@ fun PhotoContainer(uiModel: PhotoEntity) {
         )
         // container for date overlay
         Box(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .background(color = Color.Black.copy(alpha = 0.3f))
-                .align(Alignment.Center)
-                .layout {
-                        measurable, constraints ->
-                    val placeable = measurable.measure(constraints)
-
-                    val height = (constraints.maxHeight * 0.25).toInt()
-
-                    layout(constraints.maxWidth, height) {
-                        placeable.placeRelative(0, 0)
-                    }
-                },
+            contentAlignment = Alignment.Center,
+            modifier =
+                Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .background(color = Color.Black.copy(alpha = 0.3f))
+                    .layout {
+                            measurable, constraints ->
+                        val placeable = measurable.measure(constraints)
+                        val height = (constraints.maxHeight * 0.25).toInt()
+                        layout(constraints.maxWidth, height) {
+                            placeable.placeRelative(0, 0)
+                        }
+                    },
         ) {
             Text(
-                text = uiModel.date.toString(),
-                style = MaterialTheme.typography.labelSmall,
+                text = formatDate(uiModel.date),
+                style = MaterialTheme.typography.labelLarge,
                 color = Color.White,
-                modifier = Modifier.align(Alignment.Center),
+                // temp solution to center text vertically, as box contentAlignment not working.
+                modifier = Modifier.padding(top = 5.dp),
             )
         }
     }
 }
 
+fun formatDate(date: Date): String {
+    val dateFormat = SimpleDateFormat("dd/MM/yy")
+    return dateFormat.format(date)
+}
+
 @Composable
 fun OLDPhotoContainer(uiModel: PhotoUiModel) {
     Box(
-        modifier = Modifier
-            .padding(2.dp)
-            .size(64.dp, 64.dp)
-            .clip(shape = MaterialTheme.shapes.small),
+        modifier =
+            Modifier
+                .padding(2.dp)
+                .size(64.dp, 64.dp)
+                .clip(shape = MaterialTheme.shapes.small),
     ) {
         AsyncImage(
             model = uiModel.imageUri,
@@ -84,21 +93,22 @@ fun OLDPhotoContainer(uiModel: PhotoUiModel) {
         )
         // container for date overlay
         Box(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .background(color = Color.Black.copy(alpha = 0.3f))
-                .align(Alignment.Center)
-                .layout {
-                        measurable, constraints ->
-                    val placeable = measurable.measure(constraints)
+            modifier =
+                Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .background(color = Color.Black.copy(alpha = 0.3f))
+                    .align(Alignment.Center)
+                    .layout {
+                            measurable, constraints ->
+                        val placeable = measurable.measure(constraints)
 
-                    val height = (constraints.maxHeight * 0.25).toInt()
+                        val height = (constraints.maxHeight * 0.25).toInt()
 
-                    layout(constraints.maxWidth, height) {
-                        placeable.placeRelative(0, 0)
-                    }
-                },
+                        layout(constraints.maxWidth, height) {
+                            placeable.placeRelative(0, 0)
+                        }
+                    },
         ) {
             Text(
                 text = uiModel.date,
@@ -114,9 +124,10 @@ fun OLDPhotoContainer(uiModel: PhotoUiModel) {
 @Composable
 fun PreviewPhotoContainer() {
     Box(
-        modifier = Modifier
-            .size(64.dp, 64.dp)
-            .clip(shape = RoundedCornerShape(4.dp)),
+        modifier =
+            Modifier
+                .size(64.dp, 64.dp)
+                .clip(shape = RoundedCornerShape(4.dp)),
     ) {
         Image(
             painter = painterResource(R.drawable.frog),
@@ -124,21 +135,22 @@ fun PreviewPhotoContainer() {
         )
         // container for date overlay
         Box(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .background(color = Color.Black.copy(alpha = 0.3f))
-                .align(Alignment.Center)
-                .layout {
-                        measurable, constraints ->
-                    val placeable = measurable.measure(constraints)
+            modifier =
+                Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .background(color = Color.Black.copy(alpha = 0.3f))
+                    .align(Alignment.Center)
+                    .layout {
+                            measurable, constraints ->
+                        val placeable = measurable.measure(constraints)
 
-                    val height = (constraints.maxHeight * 0.25).toInt()
+                        val height = (constraints.maxHeight * 0.25).toInt()
 
-                    layout(constraints.maxWidth, height) {
-                        placeable.placeRelative(0, 0)
-                    }
-                },
+                        layout(constraints.maxWidth, height) {
+                            placeable.placeRelative(0, 0)
+                        }
+                    },
         ) {
             Text(
                 text = "frog",
