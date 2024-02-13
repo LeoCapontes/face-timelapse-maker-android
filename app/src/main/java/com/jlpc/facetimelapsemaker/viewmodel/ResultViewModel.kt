@@ -23,6 +23,7 @@ import com.jlpc.facetimelapsemaker.model.PreferenceManager
 import com.jlpc.facetimelapsemaker.utils.createTimelapse
 import com.jlpc.facetimelapsemaker.utils.deleteCachedImages
 import com.jlpc.facetimelapsemaker.utils.fileExtensionFromEncoder
+import com.jlpc.facetimelapsemaker.utils.qualityParam
 import com.jlpc.facetimelapsemaker.utils.saveImagesToCache
 import com.jlpc.facetimelapsemaker.utils.stringToEncoderEnum
 import kotlinx.coroutines.launch
@@ -50,17 +51,17 @@ class ResultViewModel(
             val uriList = repository.getAllURIs()
             preferenceManager.fpsFlow.collect { fps ->
                 preferenceManager.formatFlow.collect { format ->
-                    val formatEnum = format?.let { stringToEncoderEnum(it) }
-                    val fileExtension = formatEnum?.let { fileExtensionFromEncoder(it) }
-                    if (fps != null && formatEnum != null) {
-                        saveImagesToCache(uriList, appContext)
-                        // TODO change placeholder quality
-                        if (fps != 0) {
+                    preferenceManager.qualityFlow.collect { quality ->
+                        val formatEnum = format?.let { stringToEncoderEnum(it) }
+                        val fileExtension = formatEnum?.let { fileExtensionFromEncoder(it) }
+                        val qualityParam = quality?.let { qualityParam(it) }
+                        if (fps != null && fps != 0 && formatEnum != null && qualityParam != null) {
+                            saveImagesToCache(uriList, appContext)
                             createTimelapse(
                                 fps,
                                 appContext.cacheDir.path,
                                 formatEnum,
-                                "1920x1080",
+                                qualityParam,
                             )
                             uriLiveData.value =
                                 Uri.parse(
@@ -69,8 +70,6 @@ class ResultViewModel(
                             Log.d(TAG, "timelapse complete")
                             timelapseGenerated.value = true
                             deleteCachedImages(appContext)
-                        } else {
-                            Log.d(TAG, "fps is 0")
                         }
                     }
                 }

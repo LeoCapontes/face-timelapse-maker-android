@@ -72,6 +72,15 @@ fun stringToEncoderEnum(format: String): Encoder {
     }
 }
 
+fun qualityParam(quality: String): String {
+    return when (quality) {
+        "480p" -> "480x854"
+        "720p" -> "720x1280"
+        "1080p" -> "1080x1920"
+        else -> "720x1280"
+    }
+}
+
 // to ensure best compatibility with ffmpeg, copy and save the files into cache
 // naming each file a 4 digit number in order, i.e. 0001, 0002 etc.
 // this should be deleted after timelapse generation to save space
