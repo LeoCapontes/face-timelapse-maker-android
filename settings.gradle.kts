@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Face Timelapse Maker"
 include(":app")
- 
+include(":OpenCV")
