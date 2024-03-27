@@ -62,7 +62,10 @@ fun ResultScreen(navController: NavController) {
     }
 
     Box(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
         contentAlignment = Alignment.Center,
     ) {
         if (!timelapseFinished.value!!) {
@@ -132,7 +135,12 @@ fun PreviewResultScreen() {
     ) {
         Column {
             Text("Video")
-            Box(modifier = Modifier.height(300.dp).width(300.dp)) {
+            Box(
+                modifier =
+                    Modifier
+                        .height(300.dp)
+                        .width(300.dp),
+            ) {
                 PreviewVideoPlayer()
             }
             Text("Sharing options..")
@@ -147,14 +155,25 @@ fun VideoActionPanel(
     onShareButtonClick: () -> Unit,
     onNewVideoButtonClick: () -> Unit,
 ) {
-    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 2.dp)) {
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 2.dp),
+    ) {
         Row {
             FilledTonalButton(
-                modifier = Modifier.fillMaxWidth(0.5f).padding(end = 2.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth(0.5f)
+                        .padding(end = 2.dp),
                 onClick = onSaveButtonClick,
             ) { Text("Save") }
             FilledTonalButton(
-                modifier = Modifier.fillMaxWidth().padding(start = 2.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(start = 2.dp),
                 onClick = onShareButtonClick,
             ) { Text("Share") }
         }

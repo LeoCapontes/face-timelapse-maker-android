@@ -22,7 +22,9 @@ import com.jlpc.facetimelapsemaker.model.PhotoRepository
 import com.jlpc.facetimelapsemaker.model.PreferenceManager
 import com.jlpc.facetimelapsemaker.utils.createTimelapse
 import com.jlpc.facetimelapsemaker.utils.deleteCachedImages
+import com.jlpc.facetimelapsemaker.utils.eyeMidPoint
 import com.jlpc.facetimelapsemaker.utils.fileExtensionFromEncoder
+import com.jlpc.facetimelapsemaker.utils.fileToMat
 import com.jlpc.facetimelapsemaker.utils.qualityParam
 import com.jlpc.facetimelapsemaker.utils.saveImagesToCache
 import com.jlpc.facetimelapsemaker.utils.stringToEncoderEnum
@@ -57,6 +59,7 @@ class ResultViewModel(
                         val qualityParam = quality?.let { qualityParam(it) }
                         if (fps != null && fps != 0 && formatEnum != null && qualityParam != null) {
                             saveImagesToCache(uriList, appContext)
+                            testEyeCascade()
                             createTimelapse(
                                 fps,
                                 appContext.cacheDir.path,
@@ -105,6 +108,14 @@ class ResultViewModel(
             } catch (e: IOException) {
                 e.printStackTrace()
             }
+        }
+    }
+
+    fun testEyeCascade() {
+        viewModelScope.launch {
+            val filepath = "${appContext.cacheDir}/0001.jpg"
+            val testMat = fileToMat(appContext, filepath)
+            val testEye = testMat?.let { eyeMidPoint(appContext, it) }
         }
     }
 }
