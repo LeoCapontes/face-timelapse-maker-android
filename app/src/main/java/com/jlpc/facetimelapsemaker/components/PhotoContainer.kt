@@ -1,7 +1,9 @@
 package com.jlpc.facetimelapsemaker.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.painterResource
@@ -31,13 +34,19 @@ import java.util.Date
 
 @Composable
 fun PhotoContainer(uiModel: PhotoEntity) {
+    val TAG: String = "PhotoContainer"
     Box(
         modifier =
             Modifier
                 .padding(2.dp)
                 .fillMaxWidth()
                 .aspectRatio(1f)
-                .clip(shape = MaterialTheme.shapes.small),
+                .clip(shape = MaterialTheme.shapes.small)
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onLongPress = { Log.d(TAG, "Long pressed") },
+                    )
+                },
     ) {
         AsyncImage(
             model = uiModel.uri,
@@ -52,8 +61,7 @@ fun PhotoContainer(uiModel: PhotoEntity) {
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
                     .background(color = Color.Black.copy(alpha = 0.3f))
-                    .layout {
-                            measurable, constraints ->
+                    .layout { measurable, constraints ->
                         val placeable = measurable.measure(constraints)
                         val height = (constraints.maxHeight * 0.25).toInt()
                         layout(constraints.maxWidth, height) {
