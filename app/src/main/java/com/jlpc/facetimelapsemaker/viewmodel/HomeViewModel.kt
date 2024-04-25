@@ -12,7 +12,6 @@ import kotlinx.coroutines.launch
 class HomeViewModel(
     private val repository: PhotoRepository = FaceTimelapseMakerApp.repository,
 ) : ViewModel() {
-
     private val TAG: String = "HomeViewModel"
 
     val currentPhotoList: MutableLiveData<List<PhotoEntity>> by lazy {
@@ -26,7 +25,7 @@ class HomeViewModel(
 
     fun loadEntities() {
         viewModelScope.launch {
-            currentPhotoList.value = repository.getAllPhotoEntities()
+            currentPhotoList.value = repository.getAllPhotoEntities().sortedBy { it.date }
             Log.d(TAG, "load entities called")
             var temp = currentPhotoList.value
             var repodata = repository.getAllPhotoEntities()
