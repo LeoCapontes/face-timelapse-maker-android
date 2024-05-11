@@ -22,4 +22,8 @@ class PhotoRepository(private val database: PhotoDatabase) {
         val firstEntity = database.photoDao().getAllPhotos()[1]
         Log.d(TAG, "First entity is: $firstEntity")
     }
+
+    suspend fun deletePhoto(photoEntity: PhotoEntity) {
+        database.photoDao().deletePhoto(photoEntity)
+    }
 }
