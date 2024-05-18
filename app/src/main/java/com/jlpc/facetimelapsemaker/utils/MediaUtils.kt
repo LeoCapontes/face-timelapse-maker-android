@@ -10,18 +10,12 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 
-suspend fun createTimelapse(
-    fps: Int,
-    path: String,
-    encoder: Encoder,
-    quality: String,
-) {
-    val fileExtension = fileExtensionFromEncoder(encoder)
-    val encoderParam = encoderFFmpegString(encoder)
-    val destFileName = "timelapse.$fileExtension"
+suspend fun createTimelapse(params: TimelapseParams) {
+    val encoderParam = encoderFFmpegString(params.formatEnum)
+    val destFileName = "timelapse.${params.fileExtension}"
     val timelapseCommand = (
-        "-y -r $fps -i $path/%04d.jpg -vf scale=$quality -c:v $encoderParam -crf 5 " +
-            "-pix_fmt yuv420p $path/$destFileName"
+        "-y -r ${params.fps} -i ${params.path}/%04d.jpg -vf scale=${params.quality} -c:v $encoderParam -crf 5 " +
+            "-pix_fmt yuv420p ${params.path}/$destFileName"
     )
 
     val session: FFmpegSession = FFmpegKit.execute(timelapseCommand)
@@ -43,6 +37,14 @@ suspend fun createTimelapse(
         )
     }
 }
+
+data class TimelapseParams(
+    val fps: Int,
+    val formatEnum: Encoder,
+    val quality: String,
+    val fileExtension: String,
+    val path: String,
+)
 
 enum class Encoder {
     MP4,
@@ -81,7 +83,7 @@ fun qualityParam(quality: String): String {
     }
 }
 
-// to ensure best compatibility with ffmpeg, copy and save the files into cache
+// to ensure ease of use with ffmpeg, copy and save the files into cache
 // naming each file a 4 digit number in order, i.e. 0001, 0002 etc.
 // this should be deleted after timelapse generation to save space
 // ASSUMES .jpg PHOTOS

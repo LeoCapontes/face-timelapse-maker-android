@@ -20,12 +20,14 @@ import androidx.lifecycle.viewModelScope
 import com.jlpc.facetimelapsemaker.FaceTimelapseMakerApp
 import com.jlpc.facetimelapsemaker.model.PhotoRepository
 import com.jlpc.facetimelapsemaker.model.PreferenceManager
+import com.jlpc.facetimelapsemaker.utils.TimelapseParams
 import com.jlpc.facetimelapsemaker.utils.createTimelapse
 import com.jlpc.facetimelapsemaker.utils.deleteCachedImages
 import com.jlpc.facetimelapsemaker.utils.fileExtensionFromEncoder
 import com.jlpc.facetimelapsemaker.utils.qualityParam
 import com.jlpc.facetimelapsemaker.utils.saveImagesToCache
 import com.jlpc.facetimelapsemaker.utils.stringToEncoderEnum
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileInputStream
@@ -49,32 +51,51 @@ class ResultViewModel(
     fun launchTimelapseCommand() {
         viewModelScope.launch {
             val uriList = repository.getAllURIs()
-            preferenceManager.fpsFlow.collect { fps ->
-                preferenceManager.formatFlow.collect { format ->
-                    preferenceManager.qualityFlow.collect { quality ->
-                        val formatEnum = format?.let { stringToEncoderEnum(it) }
-                        val fileExtension = formatEnum?.let { fileExtensionFromEncoder(it) }
-                        val qualityParam = quality?.let { qualityParam(it) }
-                        if (fps != null && fps != 0 && formatEnum != null && qualityParam != null) {
-                            saveImagesToCache(uriList, appContext)
-                            createTimelapse(
-                                fps,
-                                appContext.cacheDir.path,
-                                formatEnum,
-                                qualityParam,
-                            )
-                            uriLiveData.value =
-                                Uri.parse(
-                                    "${appContext.cacheDir}/timelapse.$fileExtension",
-                                )
-                            Log.d(TAG, "timelapse complete")
-                            timelapseGenerated.value = true
-                            deleteCachedImages(appContext)
-                        }
-                    }
+            combine(
+                preferenceManager.fpsFlow,
+                preferenceManager.formatFlow,
+                preferenceManager.qualityFlow,
+            ) { fps, format, quality ->
+                Triple(fps, format, quality)
+            }.collect { (fps, format, quality) ->
+                if (fps == null || fps == 0 || format == null || quality == null) {
+                    Log.d(TAG, "Invalid parameters")
+                    return@collect
+                }
+
+                try {
+                    val params = getTimelapseParams(fps, format, quality, appContext)
+                    saveImagesToCache(uriList, appContext)
+                    createTimelapse(params)
+                    updateLiveData(appContext, params.fileExtension)
+                    deleteCachedImages(appContext)
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error generating timelapse", e)
                 }
             }
         }
+    }
+
+    private fun getTimelapseParams(
+        fps: Int,
+        format: String,
+        quality: String,
+        appContext: Context,
+    ): TimelapseParams {
+        val formatEnum = stringToEncoderEnum(format)
+        val fileExtension = fileExtensionFromEncoder(formatEnum)
+        val qualityParam = qualityParam(quality)
+        val path = appContext.cacheDir.path
+        return TimelapseParams(fps, formatEnum, qualityParam, fileExtension, path)
+    }
+
+    private fun updateLiveData(
+        appContext: Context,
+        fileExtension: String,
+    ) {
+        uriLiveData.value =
+            Uri.parse("${appContext.cacheDir}/timelapse.$fileExtension")
+        timelapseGenerated.value = true
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
