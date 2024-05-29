@@ -18,7 +18,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -28,7 +27,7 @@ import com.jlpc.facetimelapsemaker.R
 import com.jlpc.facetimelapsemaker.components.ImportedPhotoGrid
 import com.jlpc.facetimelapsemaker.viewmodel.HomeViewModel
 
-private val TAG: String = "MainScreen"
+private val TAG = "HomeScreen"
 
 @Composable
 fun HomeScreen(
@@ -36,8 +35,8 @@ fun HomeScreen(
     onSettingsButtonClick: () -> Unit,
     navController: NavController,
 ) {
-    val viewModel: HomeViewModel = HomeViewModel()
-    val TAG: String = "HomeScreen"
+    val viewModel = HomeViewModel()
+    val TAG = "HomeScreen"
     val photoList by viewModel.currentPhotoList.observeAsState()
 
     Column {
@@ -49,7 +48,7 @@ fun HomeScreen(
                     .clip(shape = MaterialTheme.shapes.large),
         ) {
             photoList?.let {
-                ImportedPhotoGrid(it)
+                ImportedPhotoGrid(it, viewModel)
                 Log.d(TAG, "photolist attempted")
             } ?: run {
                 Text("Loading Photos...")

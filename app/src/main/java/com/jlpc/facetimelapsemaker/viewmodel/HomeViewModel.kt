@@ -27,9 +27,15 @@ class HomeViewModel(
         viewModelScope.launch {
             currentPhotoList.value = repository.getAllPhotoEntities().sortedBy { it.date }
             Log.d(TAG, "load entities called")
-            var temp = currentPhotoList.value
-            var repodata = repository.getAllPhotoEntities()
-            Log.d(TAG, "current value is $temp")
+            Log.d(TAG, "current value is ${currentPhotoList.value}}")
+        }
+    }
+
+    suspend fun deletePhoto(photoEntity: PhotoEntity) {
+        viewModelScope.launch {
+            Log.d(TAG, "Called delete photo")
+            repository.deletePhoto(photoEntity)
+            Log.d(TAG, "Remaining entities: ${repository.getAllPhotoEntities()}")
         }
     }
 }

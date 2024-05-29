@@ -7,17 +7,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.jlpc.facetimelapsemaker.mocks.mockPhotoEntityList
 import com.jlpc.facetimelapsemaker.model.PhotoEntity
+import com.jlpc.facetimelapsemaker.viewmodel.HomeViewModel
 
 @Composable
-fun ImportedPhotoGrid(photoEntityList: List<PhotoEntity>) {
+fun ImportedPhotoGrid(
+    photoEntityList: List<PhotoEntity>,
+    viewModel: HomeViewModel
+) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(124.dp),
         content = {
             items(photoEntityList.size) {
                     index ->
-                PhotoContainer(photoEntityList[index])
+                PhotoContainer(photoEntityList[index], viewModel)
             }
         },
     )
@@ -30,5 +33,5 @@ fun ImportedPhotoGrid(photoEntityList: List<PhotoEntity>) {
 @Preview()
 @Composable
 fun PreviewPhotoGrid() {
-    ImportedPhotoGrid(photoEntityList = mockPhotoEntityList)
+    //ImportedPhotoGrid(photoEntityList = mockPhotoEntityList)
 }
