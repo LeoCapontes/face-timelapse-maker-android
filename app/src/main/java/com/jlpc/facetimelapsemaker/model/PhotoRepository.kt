@@ -2,6 +2,8 @@ package com.jlpc.facetimelapsemaker.model
 
 import android.net.Uri
 import android.util.Log
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class PhotoRepository(private val database: PhotoDatabase) {
     private val TAG: String = "PhotoRepo"
@@ -26,4 +28,9 @@ class PhotoRepository(private val database: PhotoDatabase) {
     suspend fun deletePhoto(photoEntity: PhotoEntity) {
         database.photoDao().deletePhoto(photoEntity)
     }
+
+    val allPhotoEntities: Flow<List<PhotoEntity>> =
+        // Use Room's Flow mechanism if you're using it for the database
+        database.photoDao().getAllPhotosAsFlow()
+            .map { photoEntities: List<PhotoEntity>-> photoEntities.sortedBy { it.date } }
 }

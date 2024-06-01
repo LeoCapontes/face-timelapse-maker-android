@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.jlpc.facetimelapsemaker.FaceTimelapseMakerApp
 import com.jlpc.facetimelapsemaker.model.PhotoEntity
 import com.jlpc.facetimelapsemaker.model.PhotoRepository
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
@@ -15,19 +16,16 @@ class HomeViewModel(
     private val TAG: String = "HomeViewModel"
 
     val currentPhotoList: MutableLiveData<List<PhotoEntity>> by lazy {
-        MutableLiveData<List<PhotoEntity>>()
+        MutableLiveData<List<PhotoEntity>>(emptyList()) // Initial state
     }
 
     init {
-        Log.d(TAG, "init")
-        loadEntities()
-    }
-
-    fun loadEntities() {
         viewModelScope.launch {
-            currentPhotoList.value = repository.getAllPhotoEntities().sortedBy { it.date }
-            Log.d(TAG, "load entities called")
-            Log.d(TAG, "current value is ${currentPhotoList.value}}")
+            repository.allPhotoEntities.collectLatest { updatedPhotoEntities ->
+                currentPhotoList.value = updatedPhotoEntities
+                // Log the update to debug if you would like to
+                Log.d(TAG, "Photo list updated in the viewModel: ${updatedPhotoEntities}")
+            }
         }
     }
 
