@@ -1,5 +1,6 @@
 package com.jlpc.facetimelapsemaker.viewmodel
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -19,12 +20,14 @@ class HomeViewModel(
         MutableLiveData<List<PhotoEntity>>(emptyList()) // Initial state
     }
 
+    val currentExpanded: MutableLiveData<Uri?> by lazy { MutableLiveData<Uri?>(null) }
+
     init {
         viewModelScope.launch {
             repository.allPhotoEntities.collectLatest { updatedPhotoEntities ->
                 currentPhotoList.value = updatedPhotoEntities
                 // Log the update to debug if you would like to
-                Log.d(TAG, "Photo list updated in the viewModel: ${updatedPhotoEntities}")
+                Log.d(TAG, "Photo list updated in the viewModel: $updatedPhotoEntities")
             }
         }
     }

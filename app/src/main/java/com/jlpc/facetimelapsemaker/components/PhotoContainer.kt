@@ -1,6 +1,6 @@
 package com.jlpc.facetimelapsemaker.components
 
-import android.util.Log
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -13,7 +13,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,34 +26,30 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.jlpc.facetimelapsemaker.R
 import com.jlpc.facetimelapsemaker.model.PhotoEntity
-import com.jlpc.facetimelapsemaker.viewmodel.HomeViewModel
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 
 @Composable
 fun PhotoContainer(
     uiModel: PhotoEntity,
-    viewModel: HomeViewModel
+    onExpandImage: (Uri) -> Unit,
 ) {
-    val TAG = "PhotoContainer"
-    val coroutineScope = rememberCoroutineScope()
     Box(
         modifier =
-        Modifier
-            .padding(2.dp)
-            .fillMaxWidth()
-            .aspectRatio(1f)
-            .clip(shape = MaterialTheme.shapes.small)
-            .pointerInput(Unit) {
-                detectTapGestures(
-                    onLongPress = {
-                        coroutineScope.launch {
-                            viewModel.deletePhoto(uiModel)}
-                        Log.d(TAG, "Long pressed")
-                    },
-                )
-            },
+            Modifier
+                .padding(2.dp)
+                .fillMaxWidth()
+                .aspectRatio(1f)
+                .clip(shape = MaterialTheme.shapes.small)
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onLongPress = {
+                            onExpandImage(Uri.parse(uiModel.uri))
+                        },
+                        onTap = {
+                        },
+                    )
+                },
     ) {
         AsyncImage(
             model = uiModel.uri,
