@@ -54,7 +54,17 @@ fun HomeScreen(
         viewModel.currentExpanded.value = uri
     }
 
-    Column {
+    Column(
+        modifier =
+            Modifier
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = {
+                        if (currentExpandedUri != null) {
+                            viewModel.currentExpanded.value = null
+                        }
+                    })
+                },
+    ) {
         Box(
             modifier =
                 Modifier
