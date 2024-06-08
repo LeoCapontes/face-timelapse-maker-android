@@ -1,6 +1,5 @@
 package com.jlpc.facetimelapsemaker.viewmodel
 
-import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -20,7 +19,9 @@ class HomeViewModel(
         MutableLiveData<List<PhotoEntity>>(emptyList()) // Initial state
     }
 
-    val currentExpanded: MutableLiveData<Uri?> by lazy { MutableLiveData<Uri?>(null) }
+    val currentExpanded: MutableLiveData<PhotoEntity?> by lazy {
+        MutableLiveData<PhotoEntity?>(null)
+    }
 
     init {
         viewModelScope.launch {

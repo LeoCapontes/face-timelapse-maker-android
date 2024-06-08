@@ -1,6 +1,5 @@
 package com.jlpc.facetimelapsemaker.view
 
-import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -8,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,17 +22,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
 import com.jlpc.facetimelapsemaker.R
+import com.jlpc.facetimelapsemaker.components.ExpandedPhotoContainer
 import com.jlpc.facetimelapsemaker.components.ImportedPhotoGrid
+import com.jlpc.facetimelapsemaker.model.PhotoEntity
 import com.jlpc.facetimelapsemaker.viewmodel.HomeViewModel
 
 private val TAG = "HomeScreen"
@@ -48,29 +45,19 @@ fun HomeScreen(
     val viewModel: HomeViewModel = viewModel()
     val TAG = "HomeScreen"
     val photoList by viewModel.currentPhotoList.observeAsState()
-    val currentExpandedUri by viewModel.currentExpanded.observeAsState()
+    val currentExpandedPhotoEntity by viewModel.currentExpanded.observeAsState()
 
-    val onImageExpand: (Uri) -> Unit = { uri ->
-        viewModel.currentExpanded.value = uri
+    val onImageExpand: (PhotoEntity) -> Unit = { entity ->
+        viewModel.currentExpanded.value = entity
     }
 
-    Column(
-        modifier =
-            Modifier
-                .pointerInput(Unit) {
-                    detectTapGestures(onTap = {
-                        if (currentExpandedUri != null) {
-                            viewModel.currentExpanded.value = null
-                        }
-                    })
-                },
-    ) {
+    Column {
         Box(
             modifier =
-                Modifier
-                    .fillMaxHeight()
-                    .padding(16.dp)
-                    .clip(shape = MaterialTheme.shapes.large),
+            Modifier
+                .fillMaxHeight()
+                .padding(16.dp)
+                .clip(shape = MaterialTheme.shapes.large),
         ) {
             photoList?.let {
                 ImportedPhotoGrid(it, onImageExpand)
@@ -81,39 +68,26 @@ fun HomeScreen(
             }
             MainButtonPanel(
                 modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.BottomCenter)
-                        .background(color = Color.White.copy(alpha = 0.8f)),
+                Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .background(color = Color.White.copy(alpha = 0.8f)),
                 onCreateButtonClick = onCreateButtonClick,
                 onSettingsButtonClick = onSettingsButtonClick,
             )
         }
     }
-    if (currentExpandedUri != null) {
+    if (currentExpandedPhotoEntity != null) {
         Box(
-            modifier =
-                Modifier.background(color = Color.Gray.copy(alpha = 0.5f)).fillMaxSize(),
-        )
-        Box(
-            contentAlignment = Alignment.Center,
             modifier =
                 Modifier
-                    .padding(64.dp)
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .clip(shape = MaterialTheme.shapes.large)
-                    .shadow(4.dp)
+                    .background(color = Color.Gray.copy(alpha = 0.5f))
+                    .fillMaxSize()
                     .pointerInput(Unit) {
-                        detectTapGestures()
-                    },
-        ) {
-            AsyncImage(
-                model = currentExpandedUri,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-            )
-        }
+                        detectTapGestures(onTap = { viewModel.currentExpanded.value = null })
+                    }
+        )
+        ExpandedPhotoContainer(entity = currentExpandedPhotoEntity!!)
     }
 }
 

@@ -1,6 +1,5 @@
 package com.jlpc.facetimelapsemaker.components
 
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -31,8 +30,8 @@ import java.util.Date
 
 @Composable
 fun PhotoContainer(
-    uiModel: PhotoEntity,
-    onExpandImage: (Uri) -> Unit,
+    entity: PhotoEntity,
+    onExpandImage: (PhotoEntity) -> Unit,
 ) {
     Box(
         modifier =
@@ -44,7 +43,7 @@ fun PhotoContainer(
                 .pointerInput(Unit) {
                     detectTapGestures(
                         onLongPress = {
-                            onExpandImage(Uri.parse(uiModel.uri))
+                            onExpandImage(entity)
                         },
                         onTap = {
                         },
@@ -52,7 +51,7 @@ fun PhotoContainer(
                 },
     ) {
         AsyncImage(
-            model = uiModel.uri,
+            model = entity.uri,
             contentDescription = null,
             contentScale = ContentScale.Crop,
         )
@@ -73,7 +72,7 @@ fun PhotoContainer(
                     },
         ) {
             Text(
-                text = formatDate(uiModel.date),
+                text = formatDate(entity.date),
                 style = MaterialTheme.typography.labelLarge,
                 color = Color.White,
                 // temp solution to center text vertically, as box contentAlignment not working.

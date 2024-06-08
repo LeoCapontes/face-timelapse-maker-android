@@ -14,10 +14,10 @@ import com.jlpc.facetimelapsemaker.model.PhotoEntity
 @Composable
 fun ImportedPhotoGrid(
     photoEntityList: List<PhotoEntity>,
-    onExpandImage: (Uri) -> Unit,
+    onExpandImage: (PhotoEntity) -> Unit,
 ) {
-    val onImageExpand: (Uri) -> Unit = { uri ->
-        onExpandImage(uri)
+    val onImageExpand: (PhotoEntity) -> Unit = { entity ->
+        onExpandImage(entity)
     }
 
     LazyVerticalGrid(
